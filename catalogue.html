@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html lang="fr">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Catalogue - Lama Location</title>
+  <link rel="stylesheet" href="style.css" />
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet" />
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</head>
+
+<body>
+  <header>
+    <div class="container">
+      <!-- LOGO + TITRE -->
+      <div class="logo-container">
+        <img src="images/logo .jpg" alt="Logo Lama" class="navbar-brand-img" />
+        <h1 class="site-title">Lama Location</h1>
+      </div>
+
+      <!-- NAVIGATION -->
+      <nav>
+        <ul>
+          <li><a href="index.html">Accueil</a></li>
+          <li><a href="catalogue.html">Catalogue</a></li>
+          
+        </ul>
+      </nav>
+    </div>
+  </header>
+
+  <main class="container">
+    <h2>Catalogue des véhicules</h2>
+
+    <div style="margin-bottom: 2rem;">
+      <label for="filtre">Filtrer par marque :</label>
+      <select id="filtre">
+        
+    </select>
+    
+    </div>
+
+    <div id="catalogue" class="features"></div>
+  </main>
+
+  <footer>
+    <div class="container">
+      <p>&copy; 2025 Lama Location. Tous droits réservés.</p>
+    </div>
+  </footer>
+
+  <script>
+  const vehicules = [
+  { marque: "Hyundai", modele: "Santa Fe", annee: 2017, prix: 20000, boite: "Automatique", carburant: "Diesel", clim: "Oui", image: "images/hyundai.jpg" },
+  { marque: "Peugeot", modele: "2008", annee: 2017, prix: 20000, boite: "Manuelle", carburant: "Essence", clim: "Oui", image: "images/peugeot.jpg" },
+  { marque: "Renault", modele: "Master", annee: 2016, prix: 50000, boite: "Manuelle", carburant: "Diesel", clim: "Oui", image: "images/renauld master.jpg" },
+  { marque: "Citroën", modele: "Jumper Bus", annee: 2020, prix: 60000, boite: "Manuelle", carburant: "Diesel", clim: "Oui", image: "images/jumper.jpg" },
+  { marque: "Ford", modele: "Escape", annee: 2017, prix: 40000, boite: "Automatique", carburant: "Essence", clim: "Oui", image: "images/ford escope.jpg" },
+  { marque: "Kia", modele: "Sorento", annee: 2016, prix: 40000, boite: "Automatique", carburant: "Essence", clim: "Oui", image: "images/kia.jpg" },
+  { marque: "BMW", modele: "X1", annee: 2017, prix: 50000, boite: "Automatique", carburant: "Essence", clim: "Oui", image: "images/bmw.jpg" },
+  { marque: "Land Rover", modele: "Discovery Sport", annee: 2019, prix: 60000, boite: "Automatique", carburant: "Diesel", clim: "Oui", image: "images/discovery.jpg" },
+  { marque: "Nissan", modele: "Rogue", annee: 2017, prix: 30000, boite: "Automatique", carburant: "Essence", clim: "Oui", image: "images/nissan.jpg" }
+];
+
+
+    const catalogue = document.getElementById("catalogue");
+    const filtre = document.getElementById("filtre");
+
+    function afficherVehicules(liste) {
+  catalogue.innerHTML = "";
+  liste.forEach((v) => {
+    catalogue.innerHTML += `
+      <div class="feature">
+        <img src="${v.image}" alt="${v.marque} ${v.modele}" class="vehicule-img">
+        <h3>${v.marque} ${v.modele}</h3>
+        <p><i class="fas fa-calendar-alt"></i> Année : ${v.annee}</p>
+        <p><i class="fas fa-tag"></i> Prix par jour : ${v.prix} FCFA</p>
+        <p><i class="fas fa-cogs"></i> Boîte : ${v.boite}</p>
+        <p><i class="fas fa-gas-pump"></i> Carburant : ${v.carburant}</p>
+        <p><i class="fas fa-snowflake"></i> Climatisation : ${v.clim}</p>
+        <button class="btn-small" onclick="window.location.href='reservation.html'">Réserver</button>
+      </div>
+    `;
+  });
+}
+
+
+
+    filtre.addEventListener("change", () => {
+      const valeur = filtre.value;
+      if (valeur === "") {
+        afficherVehicules(vehicules);
+      } else {
+        afficherVehicules(vehicules.filter((v) => v.marque === valeur));
+      }
+    });
+    document.addEventListener("DOMContentLoaded", function() {
+    const filtre = document.getElementById("filtre");
+    const marques = [...new Set(vehicules.map(v => v.marque))];
+
+    marques.forEach(marque => {
+        const option = document.createElement("option");
+        option.value = marque;
+        option.textContent = marque;
+        filtre.appendChild(option);
+    });
+});
+
+
+    afficherVehicules(vehicules);
+  </script>
+  <script>
+    fetch('get_catalogue.php')
+      .then(response => response.json())
+      .then(data => afficherVehicules(data));
+    
+    function afficherVehicules(liste) {
+        const catalogue = document.getElementById("catalogue");
+        catalogue.innerHTML = "";
+        liste.forEach((v) => {
+            catalogue.innerHTML += `
+                <div class="feature">
+                    <img src="${v.image}" alt="${v.marque} ${v.modele}" class="vehicule-img">
+                    <h3>${v.marque} ${v.modele}</h3>
+                    <p><i class="fas fa-calendar-alt"></i> Année : ${v.annee}</p>
+                    <p><i class="fas fa-tag"></i> Prix par jour : ${new Intl.NumberFormat('fr-FR').format(v.prix_jour)} FCFA</p>
+                    <p><i class="fas fa-cogs"></i> Boîte : ${v.boite}</p>
+                    <p><i class="fas fa-gas-pump"></i> Carburant : ${v.carburant}</p>
+                    <p><i class="fas fa-snowflake"></i> Climatisation : ${v.clim}</p>
+                    <button class="btn-small" onclick="window.location.href='reservation.html?vehicule=${v.marque} ${v.modele}'">Réserver</button>
+                </div>
+            `;
+        });
+    }
+    </script>
+    
+</body>
+
+</html>

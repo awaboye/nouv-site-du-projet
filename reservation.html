@@ -1,0 +1,162 @@
+<!DOCTYPE html>
+<html lang="fr">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Réservation - Lama Location</title>
+  <link rel="stylesheet" href="style.css" />
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet" />
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</head>
+
+<body>
+  <header>
+    <div class="container">
+      <!-- LOGO + TITRE -->
+      <div class="logo-container">
+        <img src="images/logo .jpg" alt="Logo Lama" class="navbar-brand-img" />
+        <h1 class="site-title">Lama Location</h1>
+      </div>
+
+      <!-- NAVIGATION -->
+      <nav>
+        <ul>
+          <li><a href="index.html">Accueil</a></li>
+          <li><a href="apropos.html">À propos</a></li>
+          <li><a href="catalogue.html">Catalogue</a></li>
+          
+        </ul>
+      </nav>
+    </div>
+  </header>
+
+  <main class="container">
+    <h2>Formulaire de réservation</h2>
+    <form id="reservationForm">
+        <label for="nom">Nom complet :</label>
+        <input type="text" id="nom" name="nom" required />
+
+        <label for="email">Email :</label>
+        <input type="email" id="email" name="email" required />
+
+        <label for="vehicule">Véhicule :</label>
+        <select id="vehicule" name="vehicule" required>
+            <option value="">-- Choisir un véhicule --</option>
+        </select>
+
+        <!-- Informations détaillées sur le véhicule sélectionné -->
+        <div id="vehicule-info" style="display:none;">
+            <h3 id="modele"></h3>
+            <p><strong>Année :</strong> <span id="annee"></span></p>
+            <p><strong>Prix/jour :</strong> <span id="prix"></span> FCFA</p>
+            <p><strong>Boîte :</strong> <span id="boite"></span></p>
+            <p><strong>Carburant :</strong> <span id="carburant"></span></p>
+            <p><strong>Climatisation :</strong> <span id="clim"></span></p>
+            <img id="image" src="" alt="Image du véhicule" style="width:100%; max-width:300px;" />
+        </div>
+
+        <label for="quantite">Quantité :</label>
+        <input type="number" id="quantite" name="quantite" min="1" required />
+
+        <label for="date-debut">Date de début :</label>
+        <input type="date" id="date-debut" name="date-debut" required />
+
+        <label for="date-fin">Date de fin :</label>
+        <input type="date" id="date-fin" name="date-fin" required />
+
+        <label for="chauffeur">Option chauffeur :</label>
+        <select id="chauffeur" name="chauffeur" required>
+            <option value="sans" data-prix="0">Sans chauffeur</option>
+            <option value="avec" data-prix="15000">Avec chauffeur (+15 000 FCFA/jour)</option>
+        </select>
+
+        <h3>Total : <span id="totalPrix">0</span> FCFA</h3>
+
+        <button type="submit" class="btn">Valider la réservation</button>
+    </form>
+
+    <div id="confirmation" style="display:none; margin-top: 1rem;">
+        <p>Merci pour votre réservation ! Nous vous contacterons très bientôt.</p>
+    </div>
+</main>
+
+
+
+  <footer>
+    <div class="container text-center py-3">
+      <p>&copy; 2025 Lama Location. Tous droits réservés.</p>
+    </div>
+  </footer>
+
+  <script>
+    document.getElementById("reservationForm").addEventListener("submit", function (event) {
+      event.preventDefault();
+      document.getElementById("reservationForm").style.display = "none";
+      document.getElementById("confirmation").style.display = "block";
+    });
+  </script>
+  <script>
+    document.addEventListener("DOMContentLoaded", function() {
+        const vehiculeSelect = document.getElementById("vehicule");
+        const vehiculeInfo = document.getElementById("vehicule-info");
+        const totalPrixSpan = document.getElementById("totalPrix");
+    
+        const vehicules = [
+            { marque: "Hyundai", modele: "Santa Fe", annee: 2017, prix: 20000, boite: "Automatique", carburant: "Diesel", clim: "Oui", },
+            { marque: "Peugeot", modele: "2008", annee: 2017, prix: 25000, boite: "Manuelle", carburant: "Essence", clim: "Oui",},
+            { marque: "Renault", modele: "Master", annee: 2016, prix: 50000, boite: "Manuelle", carburant: "Diesel", clim: "Oui", }
+        ];
+    
+        // Remplir le menu déroulant des véhicules
+        vehicules.forEach(v => {
+            const option = document.createElement("option");
+            option.value = v.marque;
+            option.textContent = `${v.marque} - ${v.modele}`;
+            option.dataset.prix = v.prix;
+            vehiculeSelect.appendChild(option);
+        });
+    
+        // Mettre à jour les infos du véhicule sélectionné
+        vehiculeSelect.addEventListener("change", function() {
+            const vehicule = vehicules.find(v => v.marque === this.value);
+            if (vehicule) {
+                document.getElementById("modele").textContent = vehicule.modele;
+                document.getElementById("annee").textContent = vehicule.annee;
+                document.getElementById("prix").textContent = vehicule.prix.toLocaleString("fr-FR");
+                document.getElementById("boite").textContent = vehicule.boite;
+                document.getElementById("carburant").textContent = vehicule.carburant;
+                document.getElementById("clim").textContent = vehicule.clim;
+                document.getElementById("image").src = vehicule.image;
+                vehiculeInfo.style.display = "block";
+                calculerMontant();
+            } else {
+                vehiculeInfo.style.display = "none";
+            }
+        });
+    
+        function calculerMontant() {
+            const vehiculePrix = parseInt(vehiculeSelect.options[vehiculeSelect.selectedIndex]?.dataset.prix || 0);
+            const chauffeurPrix = parseInt(document.getElementById("chauffeur").options[document.getElementById("chauffeur").selectedIndex]?.dataset.prix || 0);
+            const quantite = parseInt(document.getElementById("quantite").value || 1);
+            const dateDebut = new Date(document.getElementById("date-debut").value);
+            const dateFin = new Date(document.getElementById("date-fin").value);
+            const nombreJours = (dateFin - dateDebut) / (1000 * 60 * 60 * 24);
+    
+            if (nombreJours > 0) {
+                const montantTotal = (vehiculePrix + chauffeurPrix) * quantite * nombreJours;
+                totalPrixSpan.textContent = montantTotal.toLocaleString("fr-FR") + " FCFA";
+            } else {
+                totalPrixSpan.textContent = "0 FCFA";
+            }
+        }
+    
+        document.getElementById("quantite").addEventListener("input", calculerMontant);
+        document.getElementById("date-debut").addEventListener("change", calculerMontant);
+        document.getElementById("date-fin").addEventListener("change", calculerMontant);
+        document.getElementById("chauffeur").addEventListener("change", calculerMontant);
+    });
+    </script>
+</body>
+
+</html>
